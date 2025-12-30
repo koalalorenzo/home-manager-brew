@@ -20,6 +20,14 @@ consider using the [homebrew options](https://github.com/nix-darwin/nix-darwin/b
 instead. This module is designed to work on macOS and GNU/Linux, with a
 standalone home-manager installation and without nix-darwin setup.
 
+## Features
+
+* Automatic install of Homebrew if not present
+* Set up `PATH` and env variables for bash, zsh and fish shells
+* Install formulae / brew packages, cask and application from the Mac App Store
+* Support brew taps for custom repositories.
+* Automatic brew update and upgrade
+
 ## Install
 
 In your `flake.nix` configuration add the following input:
