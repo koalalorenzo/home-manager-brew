@@ -1,7 +1,7 @@
 # home-manager-brew
 
 This nix flake contains a home-manager module that allows you to install and
-manage [homebrew](https://brew.io) packages (formulae, cask, taps, mas, ...)
+manage [homebrew](https://brew.sh) packages (formulae, cask, taps, mas, ...)
 with [home-manager](https://github.com/nix-community/home-manager).
 
 ![home-manager-brew logo](logo.svg)
@@ -84,7 +84,8 @@ homebrew.formulae = [
 
 ## Casks
 
-Similarly to formulae you can specify casks to install:
+Similarly to formulae you can specify [casks](https://formulae.brew.sh/cask/)
+to install:
 
 ```nix
 homebrew.casks = [
