@@ -146,3 +146,7 @@ To prevent this, you can disable the cleanup:
 ```nix
   homebrew.cleanup = false;
 ```
+
+# License
+
+This project is licensed under the terms of the [MIT license](./LICENSE).
