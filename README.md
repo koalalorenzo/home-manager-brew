@@ -15,6 +15,11 @@ The module will automatically install homebrew and aims to provide a bridge
 between [Brew Budlefile](https://docs.brew.sh/Brew-Bundle-and-Brewfile) and
 nix's reproducible setup, with configuration as code.
 
+If you are already using [nix-darwin](https://github.com/nix-darwin/nix-darwin),
+consider using the [homebrew options](https://github.com/nix-darwin/nix-darwin/blob/master/modules/homebrew.nix)
+instead. This module is designed to work on macOS and GNU/Linux, with a
+standalone home-manager installation and without nix-darwin setup.
+
 ## Install
 
 In your `flake.nix` configuration add the following input:
