@@ -74,8 +74,19 @@
     ignoreMasChanges = lib.mkOption {
       description = ''
         If set to true it will not include Mac App Store changes when comparing
-        the Brewbundles. This prevents constantly running brew install command
+        the Brewbundles. This prevents constantly running `brew install` command
         on activation if apps are manually installed from the Mac App Store
+      '';
+      type = lib.types.bool;
+      default = true;
+    };
+
+    cleanup = lib.mkOption {
+      description = ''
+        if set to true, it will delete  applications installed manually and
+        not specified in the flake config. It uses `brew bundle cleanup`.
+        By default is set to true to stick to reproducible environments
+        principles of nix.
       '';
       type = lib.types.bool;
       default = true;
@@ -175,17 +186,26 @@
         else ""
       );
 
-      home.activation.homebrewUpdate = lib.hm.dag.entryAfter ["installPackages" "homebrewInstall"] (
-        if config.homebrew.update
-        then ''
+      # Run a brew update before installing packages from the bundle
+      home.activation.homebrewUpdate = lib.mkIf config.homebrew.update (
+        lib.hm.dag.entryAfter ["installPackages" "homebrewInstall"] ''
           if [ -f "${config.homebrew.brewPath}" ]; then
             "${config.homebrew.brewPath}" update
           fi
         ''
-        else ""
       );
 
-      home.activation.homebrewApps = lib.hm.dag.entryAfter ["homebrewInstall"] ''
+      # Remove packages that are not present in the brew bundle
+      home.activation.homebrewBundleCleanup = lib.mkIf config.homebrew.cleanup (
+        lib.hm.dag.entryAfter ["homebrewInstall"] ''
+          if [ -f "${config.homebrew.brewPath}" ]; then
+            "${config.homebrew.brewPath}" bundle cleanup --file "${brewFile}" --force
+          fi
+        ''
+      );
+
+      # Install packages from the brew bundle file generated
+      home.activation.homebrewBundleInstall = lib.hm.dag.entryAfter ["homebrewInstall" "homebrewUpdate"] ''
         if [ -f "${config.homebrew.brewPath}" ]; then
             # Checks for changes in Bundlefile
             oldHash=$("${config.homebrew.brewPath}" bundle dump --file=- ${bundleCheckFilter} | ${pkgs.openssl}/bin/openssl sha512 )
@@ -193,7 +213,6 @@
             if [ "$newHash" = "$oldHash" ]; then
               echo "Homebrew Bundle unchanged... skipping"
             else
-              "${config.homebrew.brewPath}" bundle cleanup --file "${brewFile}" --force
               "${config.homebrew.brewPath}" bundle install --file "${brewFile}"
             fi
         else
