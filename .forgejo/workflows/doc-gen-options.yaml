@@ -19,7 +19,7 @@ jobs:
         uses: https://github.com/maxking/forgejo-create-pr@v2.12
         with:
           # required
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.FORGEJO_TOKEN }}
           # optional
           base: 'main'
           commit-message: 'ci: update options documentation'
