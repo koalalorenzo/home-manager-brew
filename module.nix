@@ -103,11 +103,11 @@
 
     upgrade = lib.mkOption {
       description = ''
-        If set to true it will run a brew upgrade --greedy in the activation
+        If set to true it will run a `brew upgrade --greedy` in the activation
         script (when running home-manager switch)
       '';
       type = lib.types.bool;
-      default = true;
+      default = false;
     };
   };
 
@@ -220,14 +220,13 @@
         fi
       '';
 
-      home.activation.homebrewUpgrade = lib.hm.dag.entryAfter ["homebrewApps"] (
-        if config.homebrew.upgrade
-        then ''
+      # Run auto upgrade with brew upgrade --greedy
+      home.activation.homebrewUpgrade = lib.mkIf config.homebrew.upgrade (
+        lib.hm.dag.entryAfter ["homebrewApps"] ''
           if [ -f "${config.homebrew.brewPath}" ]; then
             "${config.homebrew.brewPath}" upgrade --greedy
           fi
         ''
-        else ""
       );
     };
 }
