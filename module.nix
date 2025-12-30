@@ -109,6 +109,14 @@
       type = lib.types.bool;
       default = false;
     };
+
+    enableShellIntegration = lib.mkOption {
+      description = ''
+        Whether to globally enable shell integration for bash, zsh or fish shells.
+      '';
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
   config = let
@@ -148,18 +156,25 @@
         HOMEBREW_BUNDLE_FILE = brewFile;
       };
 
-      programs.zsh.initContent = lib.mkOrder 1450 ''
+      programs.bash.initExtra = lib.mkIf config.homebrew.enableShellIntegration (lib.mkOrder 1450 ''
         # Load Homebrew
         if [ -f "${config.homebrew.brewPath}" ]; then
           eval "$(${config.homebrew.brewPath} shellenv)"
         fi
-      '';
+      '');
 
-      programs.fish.shellInit = lib.mkOrder 1450 ''
+      programs.zsh.initContent = lib.mkIf config.homebrew.enableShellIntegration (lib.mkOrder 1450 ''
+        # Load Homebrew
+        if [ -f "${config.homebrew.brewPath}" ]; then
+          eval "$(${config.homebrew.brewPath} shellenv)"
+        fi
+      '');
+
+      programs.fish.shellInit = lib.mkIf config.homebrew.enableShellIntegration (lib.mkOrder 1450 ''
         set -l hashomebrew false
         # Load Homebrew
         if test -e "${config.homebrew.brewPath}"
-          ${config.homebrew.brewPath} shellenv | source
+          "${config.homebrew.brewPath}" shellenv | source
           set -l hashomebrew true
         end
 
@@ -173,7 +188,7 @@
             set -p fish_complete_path "$(brew --prefix)/share/fish/vendor_completions.d"
           end
         end
-      '';
+      '');
 
       home.activation.homebrewInstall = lib.hm.dag.entryAfter ["installPackages" "linkGeneration"] (
         if config.homebrew.brewInstall
