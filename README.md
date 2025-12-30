@@ -47,9 +47,10 @@ outputs = {...} @ inputs: {
 ```
 
 > [!CAUTION]
-> If you have already packages installed please read carefully how to import
-> existing configuration. Unless disabled, home-manager will uninstall packages
-> installed manually, unless they are specified as code in the nix configuration
+> If you have already packages installed please [read carefully how to import
+> existing packages](#importing-from-existing-brew-setup). By default,
+> home-manager will uninstall packages installed manually, unless they are
+> specified as code in the nix configuration
 
 # Usage
 
