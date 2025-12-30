@@ -149,5 +149,3 @@ Whether to globally enable shell integration for bash, zsh or fish shells.
 
 **Default:** `false`
 
----
-*Generated with [nix-options-doc](https://github.com/Thunderbottom/nix-options-doc)*
