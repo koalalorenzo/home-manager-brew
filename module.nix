@@ -1,0 +1,214 @@
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}: {
+  options.homebrew = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+    };
+
+    brewInstall = lib.mkOption {
+      description = "Install homebrew if it not present";
+      type = lib.types.bool;
+      default = true;
+    };
+
+    brewPath = lib.mkOption {
+      description = "The bath of the brew binary";
+      default =
+        if pkgs.stdenv.targetPlatform.isDarwin
+        then "/opt/homebrew/bin/brew"
+        else "/home/linuxbrew/.linuxbrew/bin/brew";
+      type = lib.types.path;
+    };
+
+    taps = lib.mkOption {
+      description = "Homebrew Taps to add";
+      default = [];
+      type = lib.types.listOf (lib.types.submodule {
+        options = {
+          name = lib.mkOption {
+            type = lib.types.str;
+            description = "Name of the TAP";
+          };
+          repo = lib.mkOption {
+            type = lib.types.str;
+            description = "Repository source";
+          };
+        };
+      });
+    };
+
+    casks = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      description = "Homebrew casks to install";
+      default = [];
+    };
+
+    formulae = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      description = "Homebrew formulae / packages to install";
+      default = [];
+    };
+
+    mas = lib.mkOption {
+      description = "Mac App Store apps to install with ID";
+      default = [];
+      type = lib.types.listOf (lib.types.submodule {
+        options = {
+          name = lib.mkOption {
+            type = lib.types.str;
+            description = "Name of the app";
+          };
+          id = lib.mkOption {
+            type = lib.types.int;
+            description = "App ID";
+          };
+        };
+      });
+    };
+
+    ignoreMasChanges = lib.mkOption {
+      description = ''
+        If set to true it will not include Mac App Store changes when comparing
+        the Brewbundles. This prevents constantly running brew install command
+        on activation if apps are manually installed from the Mac App Store
+      '';
+      type = lib.types.bool;
+      default = true;
+    };
+
+    update = lib.mkOption {
+      description = ''
+        If set to true it will run a brew update in the activation script
+        (when running home-manager switch)
+      '';
+      type = lib.types.bool;
+      default = true;
+    };
+
+    upgrade = lib.mkOption {
+      description = ''
+        If set to true it will run a brew upgrade --greedy in the activation
+        script (when running home-manager switch)
+      '';
+      type = lib.types.bool;
+      default = true;
+    };
+  };
+
+  config = let
+    tapsStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
+      map (item: ''tap "${item.name}", "${item.repo}"'') config.homebrew.taps
+    )));
+    masStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
+      map (item: ''mas "${item.name}", id: ${toString item.id}'') config.homebrew.mas
+    )));
+    formulaeStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
+      map (item: ''brew "${item}"'') (["mas"] ++ config.homebrew.formulae)
+    )));
+    casksStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
+      map (item: ''cask "${item}"'') config.homebrew.casks
+    )));
+
+    brewFile = pkgs.writeText "Brewfile" (builtins.concatStringsSep "\n" (
+      lib.strings.filter (str: str != "") (
+        pkgs.lib.concatLists [
+          [tapsStr formulaeStr]
+          (
+            if pkgs.stdenv.isDarwin
+            then [casksStr masStr]
+            else []
+          )
+        ]
+      )
+    ));
+
+    bundleCheckFilter =
+      if config.homebrew.ignoreMasChanges
+      then ''| grep -v "mas"''
+      else "";
+  in
+    lib.mkIf config.homebrew.enable {
+      home.sessionVariables = {
+        HOMEBREW_BUNDLE_FILE = brewFile;
+      };
+
+      programs.zsh.initContent = lib.mkOrder 1450 ''
+        # Load Homebrew
+        if [ -f "${config.homebrew.brewPath}" ]; then
+          eval "$(${config.homebrew.brewPath} shellenv)"
+        fi
+      '';
+
+      programs.fish.shellInit = lib.mkOrder 1450 ''
+        set -l hashomebrew false
+        # Load Homebrew
+        if test -e "${config.homebrew.brewPath}"
+          ${config.homebrew.brewPath} shellenv | source
+          set -l hashomebrew true
+        end
+
+        if $hashomebrew
+          # Homebrew Autocomplete
+          if test -d "$(brew --prefix)/share/fish/completions"
+            set -p fish_complete_path "$(brew --prefix)/share/fish/completions"
+          end
+
+          if test -d "$(brew --prefix)/share/fish/vendor_completions.d"
+            set -p fish_complete_path "$(brew --prefix)/share/fish/vendor_completions.d"
+          end
+        end
+      '';
+
+      home.activation.homebrewInstall = lib.hm.dag.entryAfter ["installPackages" "linkGeneration"] (
+        if config.homebrew.brewInstall
+        then ''
+          if [ ! -f "${config.homebrew.brewPath}" ]; then
+            echo "Homebrew not found (${config.homebrew.brewPath}), installing..."
+            /bin/bash -c "$(${pkgs.curl}/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          fi
+        ''
+        else ""
+      );
+
+      home.activation.homebrewUpdate = lib.hm.dag.entryAfter ["installPackages" "homebrewInstall"] (
+        if config.homebrew.update
+        then ''
+          if [ -f "${config.homebrew.brewPath}" ]; then
+            "${config.homebrew.brewPath}" update
+          fi
+        ''
+        else ""
+      );
+
+      home.activation.homebrewApps = lib.hm.dag.entryAfter ["homebrewInstall"] ''
+        if [ -f "${config.homebrew.brewPath}" ]; then
+            # Checks for changes in Bundlefile
+            oldHash=$("${config.homebrew.brewPath}" bundle dump --file=- ${bundleCheckFilter} | ${pkgs.openssl}/bin/openssl sha512 )
+            newHash=$(cat ${brewFile} ${bundleCheckFilter} | ${pkgs.openssl}/bin/openssl sha512 )
+            if [ "$newHash" = "$oldHash" ]; then
+              echo "Homebrew Bundle unchanged... skipping"
+            else
+              "${config.homebrew.brewPath}" bundle cleanup --file "${brewFile}" --force
+              "${config.homebrew.brewPath}" bundle install --file "${brewFile}"
+            fi
+        else
+          echo "-- Error: ${config.homebrew.brewPath} was not installed/found"
+        fi
+      '';
+
+      home.activation.homebrewUpgrade = lib.hm.dag.entryAfter ["homebrewApps"] (
+        if config.homebrew.upgrade
+        then ''
+          if [ -f "${config.homebrew.brewPath}" ]; then
+            "${config.homebrew.brewPath}" upgrade --greedy
+          fi
+        ''
+        else ""
+      );
+    };
+}
