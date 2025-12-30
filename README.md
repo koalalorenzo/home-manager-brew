@@ -12,7 +12,8 @@ custom/private taps and you would still be able to set them up with
 home-manager.
 
 The module will automatically install homebrew and aims to provide a bridge
-between Brew Budlefile and nix's reproducible setup, with configuration as code.
+between [Brew Budlefile](https://docs.brew.sh/Brew-Bundle-and-Brewfile) and
+nix's reproducible setup, with configuration as code.
 
 ## Install
 
