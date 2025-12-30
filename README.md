@@ -46,6 +46,11 @@ outputs = {...} @ inputs: {
 };
 ```
 
+> [!CAUTION]
+> If you have already packages installed please read carefully how to import
+> existing configuration. Unless disabled, home-manager will uninstall packages
+> installed manually, unless they are specified as code in the nix configuration
+
 # Usage
 
 You can add specific [formulae](https://formulae.brew.sh) / packages like this:
