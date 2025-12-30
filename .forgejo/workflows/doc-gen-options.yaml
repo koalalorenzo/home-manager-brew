@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Generate options file
-        run: nix run github:Thunderbottom/nix-options-doc -- --format markdown --strip-prefix options. options.md
+        run: nix run github:Thunderbottom/nix-options-doc -- --format markdown --strip-prefix options. -o options.md
 
       - name: Create Pull Request
         uses: https://github.com/maxking/forgejo-create-pr@v2.12
