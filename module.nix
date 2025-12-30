@@ -104,10 +104,11 @@
     upgrade = lib.mkOption {
       description = ''
         If set to true it will run a `brew upgrade --greedy` in the activation
-        script (when running home-manager switch)
+        script (when running home-manager switch). If you want to keep a
+        specific version, uses `brew pin` command.
       '';
       type = lib.types.bool;
-      default = false;
+      default = true;
     };
 
     enableShellIntegration = lib.mkOption {
