@@ -116,7 +116,7 @@
         Whether to globally enable shell integration for bash, zsh or fish shells.
       '';
       type = lib.types.bool;
-      default = false;
+      default = true;
     };
   };
 
