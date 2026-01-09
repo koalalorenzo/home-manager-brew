@@ -175,18 +175,17 @@
         set -l hashomebrew false
         # Load Homebrew
         if test -e "${config.homebrew.brewPath}"
-          "${config.homebrew.brewPath}" shellenv | source
           set -l hashomebrew true
         end
 
         if $hashomebrew
           # Homebrew Autocomplete
-          if test -d "$(brew --prefix)/share/fish/completions"
-            set -p fish_complete_path "$(brew --prefix)/share/fish/completions"
+          if test -d "$(${config.homebrew.brewPath} --prefix)/share/fish/completions"
+            set -p fish_complete_path "$(${config.homebrew.brewPath} --prefix)/share/fish/completions"
           end
 
-          if test -d "$(brew --prefix)/share/fish/vendor_completions.d"
-            set -p fish_complete_path "$(brew --prefix)/share/fish/vendor_completions.d"
+          if test -d "$(${config.homebrew.brewPath} --prefix)/share/fish/vendor_completions.d"
+            set -p fish_complete_path "$(${config.homebrew.brewPath} --prefix)/share/fish/vendor_completions.d"
           end
         end
       '');
