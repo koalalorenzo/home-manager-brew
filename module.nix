@@ -172,21 +172,17 @@
       '');
 
       programs.fish.shellInit = lib.mkIf config.homebrew.enableShellIntegration (lib.mkOrder 1450 ''
-        set -l hashomebrew false
         # Load Homebrew
         if test -e "${config.homebrew.brewPath}"
-          set -l hashomebrew true
+          eval "$(${config.homebrew.brewPath} shellenv)"
         end
 
-        if $hashomebrew
-          # Homebrew Autocomplete
-          if test -d "$(${config.homebrew.brewPath} --prefix)/share/fish/completions"
-            set -p fish_complete_path "$(${config.homebrew.brewPath} --prefix)/share/fish/completions"
-          end
+        if test -d "$(${config.homebrew.brewPath} --prefix)/share/fish/completions"
+          set -p fish_complete_path "$(${config.homebrew.brewPath} --prefix)/share/fish/completions"
+        end
 
-          if test -d "$(${config.homebrew.brewPath} --prefix)/share/fish/vendor_completions.d"
-            set -p fish_complete_path "$(${config.homebrew.brewPath} --prefix)/share/fish/vendor_completions.d"
-          end
+        if test -d "$(${config.homebrew.brewPath} --prefix)/share/fish/vendor_completions.d"
+          set -p fish_complete_path "$(${config.homebrew.brewPath} --prefix)/share/fish/vendor_completions.d"
         end
       '');
 
