@@ -191,7 +191,7 @@
         then ''
           if [ ! -f "${config.homebrew.brewPath}" ]; then
             echo "Homebrew not found (${config.homebrew.brewPath}), installing..."
-            /bin/bash -c "$(${pkgs.curl}/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+            ${pkgs.bash}/bin/bash -c "$(${pkgs.curl}/bin/curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
           fi
         ''
         else ""
