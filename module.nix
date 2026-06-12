@@ -38,6 +38,11 @@
             type = lib.types.str;
             description = "Repository source";
           };
+          trusted = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = "automatically trust this tap";
+          };
         };
       });
     };
@@ -122,7 +127,7 @@
 
   config = let
     tapsStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
-      map (item: ''tap "${item.name}", "${item.repo}"'') config.homebrew.taps
+      map (item: ''tap "${item.name}", "${item.repo}", trusted: ${lib.boolToString item.trusted}'') config.homebrew.taps
     )));
     masStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
       map (item: ''mas "${item.name}", id: ${toString item.id}'') config.homebrew.mas
