@@ -72,8 +72,15 @@ You can add specific [formulae](https://formulae.brew.sh) / packages like this:
 ```nix
 homebrew.formulae = [
   "cmatrix"
+  {
+    name = "rustup";
+    args = ["HEAD"];
+  }
 ];
 ```
+
+Formulae can be specified as strings or as attribute sets when arguments are
+needed.
 
 ## Taps
 If you want to add taps you can do so like this:
