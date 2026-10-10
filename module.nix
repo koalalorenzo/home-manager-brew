@@ -144,7 +144,7 @@
         pkgs.lib.concatLists [
           [tapsStr formulaeStr]
           (
-            if pkgs.stdenv.isDarwin
+            if pkgs.stdenv.targetPlatform.isDarwin
             then [casksStr masStr]
             else []
           )
