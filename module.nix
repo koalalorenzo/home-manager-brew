@@ -223,6 +223,9 @@
       # Install packages from the brew bundle file generated
       home.activation.homebrewBundleInstall = lib.hm.dag.entryAfter ["homebrewInstall" "homebrewUpdate"] ''
         if [ -f "${config.homebrew.brewPath}" ]; then
+            # `brew bundle` relies on external tools like `mas`, so we need to
+            # add the brew bindir to the `PATH` upfront.
+            export PATH="${dirOf (toString config.homebrew.brewPath)}:$PATH"
             # Checks for changes in Bundlefile
             oldHash=$("${config.homebrew.brewPath}" bundle dump --file=- ${bundleCheckFilter} | ${pkgs.openssl}/bin/openssl sha512 )
             newHash=$(cat ${brewFile} ${bundleCheckFilter} | ${pkgs.openssl}/bin/openssl sha512 )
