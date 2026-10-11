@@ -1,25 +1,28 @@
 # NixOS Module Options
 
 
+<a id="homebrew-enable"></a>
 ## [`homebrew.enable`](module.nix#L8)
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
 **Default:** `true`
 
+<a id="homebrew-brewInstall"></a>
 ## [`homebrew.brewInstall`](module.nix#L13)
 
 Install homebrew if it not present
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
 **Default:** `true`
 
+<a id="homebrew-brewPath"></a>
 ## [`homebrew.brewPath`](module.nix#L19)
 
 The bath of the brew binary
 
-**Type:** `lib.types.path`
+**Type:** `path`
 
 **Default:**
 
@@ -29,69 +32,81 @@ then "/opt/homebrew/bin/brew"
 else "/home/linuxbrew/.linuxbrew/bin/brew"
 ```
 
+<a id="homebrew-taps"></a>
 ## [`homebrew.taps`](module.nix#L28)
 
 Homebrew Taps to add
 
-**Type:**
-
-```nix
-lib.types.listOf (lib.types.submodule {
-  options = {
-    name = lib.mkOption {
-      type = lib.types.str;
-      description = "Name of the TAP";
-    };
-    repo = lib.mkOption {
-      type = lib.types.str;
-      description = "Repository source";
-    };
-  };
-})
-```
+**Type:** `list of submodule`
 
 **Default:** `[]`
 
-## [`homebrew.casks`](module.nix#L45)
+<a id="homebrew-taps-<name>-name"></a>
+## [`homebrew.taps.<name>.name`](module.nix#L33)
+
+Name of the TAP
+
+**Type:** `string`
+
+<a id="homebrew-taps-<name>-repo"></a>
+## [`homebrew.taps.<name>.repo`](module.nix#L37)
+
+Repository source
+
+**Type:** `string`
+
+<a id="homebrew-taps-<name>-trusted"></a>
+## [`homebrew.taps.<name>.trusted`](module.nix#L41)
+
+automatically trust this tap
+
+**Type:** `boolean`
+
+**Default:** `true`
+
+<a id="homebrew-casks"></a>
+## [`homebrew.casks`](module.nix#L50)
 
 Homebrew casks to install
 
-**Type:** `lib.types.listOf lib.types.str`
+**Type:** `list of string`
 
 **Default:** `[]`
 
-## [`homebrew.formulae`](module.nix#L51)
+<a id="homebrew-formulae"></a>
+## [`homebrew.formulae`](module.nix#L56)
 
 Homebrew formulae / packages to install
 
-**Type:** `lib.types.listOf lib.types.str`
+**Type:** `list of string`
 
 **Default:** `[]`
 
-## [`homebrew.mas`](module.nix#L57)
+<a id="homebrew-mas"></a>
+## [`homebrew.mas`](module.nix#L62)
 
 Mac App Store apps to install with ID
 
-**Type:**
-
-```nix
-lib.types.listOf (lib.types.submodule {
-  options = {
-    name = lib.mkOption {
-      type = lib.types.str;
-      description = "Name of the app";
-    };
-    id = lib.mkOption {
-      type = lib.types.int;
-      description = "App ID";
-    };
-  };
-})
-```
+**Type:** `list of submodule`
 
 **Default:** `[]`
 
-## [`homebrew.ignoreMasChanges`](module.nix#L74)
+<a id="homebrew-mas-<name>-name"></a>
+## [`homebrew.mas.<name>.name`](module.nix#L67)
+
+Name of the app
+
+**Type:** `string`
+
+<a id="homebrew-mas-<name>-id"></a>
+## [`homebrew.mas.<name>.id`](module.nix#L71)
+
+App ID
+
+**Type:** `signed integer`
+
+<a id="homebrew-ignoreMasChanges"></a>
+## [`homebrew.ignoreMasChanges`](module.nix#L79)
 
 
 If set to true it will not include Mac App Store changes when comparing
@@ -99,11 +114,12 @@ the Brewbundles. This prevents constantly running `brew install` command
 on activation if apps are manually installed from the Mac App Store
 
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
 **Default:** `true`
 
-## [`homebrew.cleanup`](module.nix#L84)
+<a id="homebrew-cleanup"></a>
+## [`homebrew.cleanup`](module.nix#L89)
 
 
 if set to true, it will delete  applications installed manually and
@@ -112,22 +128,24 @@ By default is set to true to stick to reproducible environments
 principles of nix.
 
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
 **Default:** `true`
 
-## [`homebrew.update`](module.nix#L95)
+<a id="homebrew-update"></a>
+## [`homebrew.update`](module.nix#L100)
 
 
 If set to true it will run a brew update in the activation script
 (when running home-manager switch)
 
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
 **Default:** `true`
 
-## [`homebrew.upgrade`](module.nix#L104)
+<a id="homebrew-upgrade"></a>
+## [`homebrew.upgrade`](module.nix#L109)
 
 
 If set to true it will run a `brew upgrade --greedy` in the activation
@@ -135,19 +153,20 @@ script (when running home-manager switch). If you want to keep a
 specific version, uses `brew pin` command.
 
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
 **Default:** `true`
 
-## [`homebrew.enableShellIntegration`](module.nix#L114)
+<a id="homebrew-enableShellIntegration"></a>
+## [`homebrew.enableShellIntegration`](module.nix#L119)
 
 
 Whether to globally enable shell integration for bash, zsh or fish shells.
 
 
-**Type:** `lib.types.bool`
+**Type:** `boolean`
 
-**Default:** `false`
+**Default:** `true`
 
 ---
 *Generated with [nix-options-doc](https://github.com/Thunderbottom/nix-options-doc)*
