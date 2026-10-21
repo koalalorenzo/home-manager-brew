@@ -54,7 +54,22 @@
     };
 
     formulae = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.listOf (lib.types.oneOf [
+        lib.types.str
+        (lib.types.submodule {
+          options = {
+            name = lib.mkOption {
+              type = lib.types.str;
+              description = "Name of the formula";
+            };
+            args = lib.mkOption {
+              type = lib.types.listOf lib.types.str;
+              default = [];
+              description = "Arguments to pass to the formula";
+            };
+          };
+        })
+      ]);
       description = "Homebrew formulae / packages to install";
       default = [];
     };
@@ -133,7 +148,12 @@
       map (item: ''mas "${item.name}", id: ${toString item.id}'') config.homebrew.mas
     )));
     formulaeStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
-      map (item: ''brew "${item}"'') (["mas"] ++ config.homebrew.formulae)
+      map (
+        item:
+          if builtins.isString item
+          then ''brew "${item}"''
+          else ''brew "${item.name}", args: ${builtins.toJSON item.args}''
+      ) (["mas"] ++ config.homebrew.formulae)
     )));
     casksStr = lib.concatStringsSep "\n" (lib.lists.naturalSort (lib.lists.naturalSort (
       map (item: ''cask "${item}"'') config.homebrew.casks

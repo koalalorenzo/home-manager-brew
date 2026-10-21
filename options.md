@@ -78,12 +78,12 @@ Homebrew casks to install
 
 Homebrew formulae / packages to install
 
-**Type:** `list of string`
+**Type:** `list of string or submodule`
 
 **Default:** `[]`
 
 <a id="homebrew-mas"></a>
-## [`homebrew.mas`](module.nix#L62)
+## [`homebrew.mas`](module.nix#L77)
 
 Mac App Store apps to install with ID
 
@@ -92,21 +92,21 @@ Mac App Store apps to install with ID
 **Default:** `[]`
 
 <a id="homebrew-mas-<name>-name"></a>
-## [`homebrew.mas.<name>.name`](module.nix#L67)
+## [`homebrew.mas.<name>.name`](module.nix#L82)
 
 Name of the app
 
 **Type:** `string`
 
 <a id="homebrew-mas-<name>-id"></a>
-## [`homebrew.mas.<name>.id`](module.nix#L71)
+## [`homebrew.mas.<name>.id`](module.nix#L86)
 
 App ID
 
 **Type:** `signed integer`
 
 <a id="homebrew-ignoreMasChanges"></a>
-## [`homebrew.ignoreMasChanges`](module.nix#L79)
+## [`homebrew.ignoreMasChanges`](module.nix#L94)
 
 
 If set to true it will not include Mac App Store changes when comparing
@@ -119,7 +119,7 @@ on activation if apps are manually installed from the Mac App Store
 **Default:** `true`
 
 <a id="homebrew-cleanup"></a>
-## [`homebrew.cleanup`](module.nix#L89)
+## [`homebrew.cleanup`](module.nix#L104)
 
 
 if set to true, it will delete  applications installed manually and
@@ -133,7 +133,7 @@ principles of nix.
 **Default:** `true`
 
 <a id="homebrew-update"></a>
-## [`homebrew.update`](module.nix#L100)
+## [`homebrew.update`](module.nix#L115)
 
 
 If set to true it will run a brew update in the activation script
@@ -145,7 +145,7 @@ If set to true it will run a brew update in the activation script
 **Default:** `true`
 
 <a id="homebrew-upgrade"></a>
-## [`homebrew.upgrade`](module.nix#L109)
+## [`homebrew.upgrade`](module.nix#L124)
 
 
 If set to true it will run a `brew upgrade --greedy` in the activation
@@ -158,7 +158,7 @@ specific version, uses `brew pin` command.
 **Default:** `true`
 
 <a id="homebrew-enableShellIntegration"></a>
-## [`homebrew.enableShellIntegration`](module.nix#L119)
+## [`homebrew.enableShellIntegration`](module.nix#L134)
 
 
 Whether to globally enable shell integration for bash, zsh or fish shells.
